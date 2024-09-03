@@ -4,10 +4,9 @@
 # * 
 # * 
 # ***********************************************************************************************************/
-import Logger
 import json
-from utility import utility
 
+from decode.utility import utility
 
 class DO201(object):
     # Func: parse data to attr
@@ -20,12 +19,12 @@ class DO201(object):
         try:
             data_type = req_data[6:8]
             data_len = int(req_data[8:10], 16)
-            global attr_result
-            global token_id
+            global interpretedData
+            global equipmentIMEI
 
             if data_len == len(req_data) / 2:
                 if (data_type == "01" or data_type == "02") and (data_len ==38 ):
-                    token_id = req_data[59:74]
+                    equipmentIMEI = req_data[59:74]
                     data_height = int(req_data[10:14], 16)
                     data_park_status = int(req_data[14:15], 16)
                     data_ultra_status = int(req_data[15:16], 16)
@@ -65,13 +64,13 @@ class DO201(object):
                         "timestamp": data_timestamp,  
                         "temperature": data_temperature,  
                         "humidity": data_humidity,                     
-                        "rsrp": data_rsrp,                        
+                        "RSRP": data_rsrp,                        
                         "frame_counter": data_frame_counter,
                     }
-                    attr_result = json.dumps(attribute)
+                    interpretedData = json.dumps(attribute)
                 else:
                     if (data_type == "03"):
-                        token_id = req_data[data_len*2-17:data_len*2-2]
+                        equipmentIMEI = req_data[data_len*2-17:data_len*2-2]
                         data_version = str(int(req_data[10:12], 16))+"."+str(int(req_data[12:14], 16))
                         data_upload_interval = int(req_data[14:16], 16)
                         data_cyclic_interval = int(req_data[16:18], 16)
@@ -79,7 +78,6 @@ class DO201(object):
                         data_magnet_threshold = int(req_data[20:24], 16)  
                         data_battery_threshold = int(req_data[24:26], 16)                 
                         
-                        # print("rsrp is "+str(data_rsrp))
                         attribute = {
                             "firmware": data_version,
                             "uploadInterval": data_upload_interval,
@@ -88,27 +86,24 @@ class DO201(object):
                             "magnetThreshold": data_magnet_threshold,
                             "batteryThreshold": data_battery_threshold,                        
                         }
-                        attr_result = json.dumps(attribute)                    
+                        interpretedData = json.dumps(attribute)                    
                     else:
                         pass
             else:
                 pass
 
-            # str_org=str(byte_org)
-
         except Exception as e:
-            print(e)
-            # log.logger.exception(e)
+            pass
         finally:
-            return attr_result, token_id
+            return interpretedData, equipmentIMEI
 
-
+####- Para fazer testes:
 if __name__ == "__main__":
     try:
-        attr_result = ""
         #incomingData = "8000310226270F11100165010DFC31F868FD13000070C4659CF8060001186973806917580581"
-        incomingData = "8000310327010218053C003C143132302E39322E38392E3132323B23823B186973806917580581"
-        attr_result = DO201.parse_data_DO201(incomingData)        
+        incomingData = "80003102260b6a00000168fd71fd85fb341a290000000066d62c2d0001186973806917602781"
+        interpretedData = DO201.parse_data_DO201(incomingData)       
+        print(interpretedData) 
     except Exception as e:
         print(e)
         

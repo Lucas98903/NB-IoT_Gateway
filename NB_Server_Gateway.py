@@ -3,25 +3,18 @@
 # coding: utf-8
 
 import socket
-import Logger
 import threading
 import time
-import do201
+import decode.do201 as do201
 
+from log.Logger import Logger
 
-port_number = 9000
+port_number = 810
 max_clients = 10
 interpretedData = ""
 equipmentIMEI = ""
 
-log = Logger.Logger("all.log", level="debug")
-
-def response_sensor(client, data):
-    try:
-        client.send(bytes(data, "utf-8"))
-    except Exception as ex:
-        # print(e)
-        log.logger.exception(ex)
+log = Logger(r"log\all.log", level="debug")
 
 def handle_client(client, address):
     try:
@@ -30,7 +23,8 @@ def handle_client(client, address):
         global interpretedData
         request_str = ""
         global equipmentIMEI
-        find_result1 = -1
+        start = int(-1)
+        end = int(-1)
         while True:
             if not client._closed:
                 request_bytes = request_bytes + client.recv(1024)
@@ -43,9 +37,14 @@ def handle_client(client, address):
                 print(request_str) #Mosta o HEX no terminal
                 break
             
-        str_subreq = str(request_str[int(start):int(end + 2)]) #Ajusta a transmissão
-        interpretedData, equipmentIMEI = do201.DO201.parse_data_DO201(str_subreq.strip().upper()) #Faz o DECODE dos dados
-
+        try:
+            str_subreq = str(request_str[int(start):int(end + 2)]) #Ajusta a a informacao
+            interpretedData, equipmentIMEI = do201.DO201.parse_data_DO201(str_subreq.strip().upper()) #Faz o DECODE dos dados
+        except Exception as e:
+            log.logger.error(f"Error while decode: {e}")
+            client.close()
+            return None
+        
         print("Data interpreted"+interpretedData+" IMEI of equipment is "+equipmentIMEI)
         log.logger.info(f"Data interpreted-> {interpretedData} IMEI of equipment is {equipmentIMEI}")
         
@@ -55,11 +54,10 @@ def handle_client(client, address):
         
         '''
         
-        
         time.sleep(1)
         client.close()
         time.sleep(1)
-        log.logger.debug("==========- close device connection -===========")
+        log.logger.debug("close device connection")
     except socket.timeout:
         print("time out")
         client.close()
@@ -67,10 +65,8 @@ def handle_client(client, address):
 
 if __name__ == "__main__":
     try:
-        '''
-        attr_result = ""
-        token_deviceid = ""
-        '''
+        interpretedData = ""
+        
         ###Criação do SOCKET
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.bind(("0.0.0.0", port_number))
@@ -78,12 +74,12 @@ if __name__ == "__main__":
         
         while True:
             client_socket, client_address = server_socket.accept()
-            log.logger.info(str(client_address) + "user connected!")
+            log.logger.info(f"=======- {str(client_address)} user connected! -=======")
             thread = threading.Thread(
                 target=handle_client, args=(client_socket, client_address)
             )
             thread.start()
-            log.logger.debug("after handle_client_process close!")
+            log.logger.debug("=======- after handle_client_process close! -=======")
     except Exception as e:
         print(e)
         log.logger.error(e)
