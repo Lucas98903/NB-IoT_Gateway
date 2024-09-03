@@ -7,11 +7,11 @@ __pycache__/
 # C extensions
 *.so
 
-# Paste
-#/test/
-#test/
-#*.ipynb
-#teste.py
+ Paste
+/test/
+test/
+*.ipynb
+teste.py
 /ignorado/
 ignorado
 /ignorado
