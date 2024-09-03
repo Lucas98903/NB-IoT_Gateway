@@ -73,6 +73,7 @@ if __name__ == "__main__":
         server_socket.listen(max_clients)
         
         while True:
+            print("Waiting Connection")
             client_socket, client_address = server_socket.accept()
             log.logger.info(f"=======- {str(client_address)} user connected! -=======")
             thread = threading.Thread(
