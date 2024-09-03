@@ -8,8 +8,15 @@ __pycache__/
 *.so
 
 # Paste
-test/
-*.ipynb
+#/test/
+#test/
+#*.ipynb
+#teste.py
+/ignorado/
+ignorado
+/ignorado
+ignorado/
+
 
 # Distribution / packaging
 .Python
