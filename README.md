@@ -6,11 +6,9 @@
 ├── decode/                       # Contém arquivos para interpretar o hexadecimal recebido
 │ ├── __init__.py                 # Arquivo inicializador do módulo 
 │ ├── dp201.py                    # Interpreta o hexadecimal
-│ └──  utility.py                  # Função para converter o valor do RSRP de ponto flutuante para float.
+│ └── utility.py                  # Função para converter o valor do RSRP de ponto flutuante para float.
 ├── documents/                    # Contém todos o documentos do sensor 
 │ └── ... 
-├── route                         # Contém arquivo para acesso à Vivavox
-│   └──vivavo_api.py              # Faz as importações dos dados da Vivavox
 ├──log                            # Contém tudo que é relacionado a logs e registro
 │  ├──hist                        # Apenas para manter alguns logs importantes
 |  │  └──...
@@ -20,5 +18,5 @@
 │ └──ToDo.txt                     # Lista de coisas a fazer
 ├── .gitignore                    # Arquivos ignorados no versionamento
 ├── NB_Server_Gateway.py          # Arquivo que inicializa o Gateway e configura as rotas
-└──  README.md                     # Readme do projeto
+└── README.md                     # Readme do projeto
 ```
