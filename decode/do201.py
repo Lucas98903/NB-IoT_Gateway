@@ -6,7 +6,7 @@
 # ***********************************************************************************************************/
 import json
 
-from decode.utility import utility
+from utility import utility
 
 class DO201(object):
     # Func: parse data to attr

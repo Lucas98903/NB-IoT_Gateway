@@ -6,6 +6,14 @@ import socket
 import threading
 import time
 import decode.do201 as do201
+from pymongo import MongoClient
+
+#Chave do banco de dados
+client = MongoClient("mongodb+srv://Rick98903:28465chaos@cluster0.ryq35.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+
+db = client['NB-IOT_Gateway']
+colecao = db['equipementDATA']
+
 
 from log.Logger import Logger
 
@@ -48,11 +56,15 @@ def handle_client(client, address):
         print("Data interpreted"+interpretedData+" IMEI of equipment is "+equipmentIMEI)
         log.logger.info(f"Data interpreted-> {interpretedData} IMEI of equipment is {equipmentIMEI}")
         
-        '''
+        #T==================================================
+        try:
+            resultado = colecao.insert_one(interpretedData)
+            print(f'Documento inserido com ID: {resultado.inserted_id}')
+        except Exception as e:
+            print(f"Ocorreu um erro ao subir no MONGODB-> {e}")
+        #T==================================================
         
-        Tratar os dados aqui
         
-        '''
         
         time.sleep(1)
         client.close()

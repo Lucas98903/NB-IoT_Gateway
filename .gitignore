@@ -7,7 +7,7 @@ __pycache__/
 # C extensions
 *.so
 
- Paste
+#Paste
 /test/
 test/
 *.ipynb
@@ -16,6 +16,10 @@ teste.py
 ignorado
 /ignorado
 ignorado/
+.vscode
+/.vscode
+.vscode/
+/.vscode/
 
 
 # Distribution / packaging
