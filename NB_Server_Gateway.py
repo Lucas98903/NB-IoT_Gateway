@@ -7,22 +7,18 @@ import threading
 import time
 import decode.do201 as do201
 from pymongo import MongoClient
+from log import log
 
-#Chave do banco de dados
 client = MongoClient("mongodb+srv://Rick98903:28465chaos@cluster0.ryq35.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 
 db = client['NB-IOT_Gateway']
 colecao = db['equipementDATA']
 
 
-from log.Logger import Logger
-
 port_number = 810
 max_clients = 10
 interpretedData = ""
 equipmentIMEI = ""
-
-log = Logger(r"log\all.log", level="debug")
 
 def handle_client(client, address):
     try:
@@ -59,7 +55,8 @@ def handle_client(client, address):
         #T==================================================
         try:
             resultado = colecao.insert_one(interpretedData)
-            print(f'Documento inserido com ID: {resultado.inserted_id}')
+            if resultado:
+                print(f'Documento inserido com ID: {resultado.inserted_id}')
         except Exception as e:
             print(f"Ocorreu um erro ao subir no MONGODB-> {e}")
         #T==================================================
@@ -79,7 +76,6 @@ if __name__ == "__main__":
     try:
         interpretedData = ""
         
-        ###Criação do SOCKET
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.bind(("0.0.0.0", port_number))
         server_socket.listen(max_clients)
