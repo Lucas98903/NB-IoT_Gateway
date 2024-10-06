@@ -1,3 +1,3 @@
-from .logger import Logger
+from .Logger import Logger
 
-log = Logger(r'log\Equipment_Status.log', level='debug')
+log = Logger(r'log/Equipment_Status.log', level='debug')

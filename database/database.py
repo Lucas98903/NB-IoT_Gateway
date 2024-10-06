@@ -10,8 +10,8 @@ class Database:
 
     def connect(self, database, collection):
         try:
-            connectionString = "mongodb://localhost:27017"  # -> Local
-            # connectionString = "mongodb+srv://Rick98903:28465chaos@cluster0.ryq35.mongodb.net/"  # -> Iflow
+            # connectionString = "mongodb://localhost:27017"  # -> Local
+            connectionString = "mongodb+srv://Rick98903:28465chaos@cluster0.ryq35.mongodb.net/"  # -> Iflow
 
             self.clusterConnection = pymongo.MongoClient(
                 connectionString,
