@@ -1,5 +1,6 @@
 import socket
 import threading
+import traceback
 
 from log import log
 from handle.handle_client import handle
@@ -24,6 +25,9 @@ if __name__ == "__main__":
             )
             thread.start()
             log.logger.debug("=======- after handle_client_process close! -=======")
-    except Exception as e:
-        print(e)
-        log.logger.error(e)
+            
+    except:
+        detail_error = traceback.format_exc()
+        log.logger.error(f"Error while decode: {detail_error}")
+        print(detail_error)
+        print("Process iterruption!")        

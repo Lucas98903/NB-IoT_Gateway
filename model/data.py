@@ -5,18 +5,18 @@ from typing import Any
 
 class data_0X01_0X02(BaseModel):
     volt: float
-    alarmBattery: bool
+    alarmBattery: int
     level: int
-    alarmPark: bool
-    alarmLevel: bool
-    alarmMagnet: bool
+    alarmPark: int
+    alarmLevel: int
+    alarmMagnet: int
     xMagnet: int
     yMagnet: int
     zMagnet: int
     timestamp: datetime  
     temperature: int  
     humidity: int                     
-    RSRP: Any      
+    RSRP: int     
     frame_counter: int
     
 class data_0X03(BaseModel):

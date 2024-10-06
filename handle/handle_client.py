@@ -1,7 +1,8 @@
 import time
 import socket
+import traceback
 
-import decode.do201 as do201
+from decode.do201 import DO201
 from database.DAO import updatedDAO
 from log import log
 
@@ -29,41 +30,53 @@ def handle(client, address):
             start = str(request_str).find("8000")
             end = str(request_str).find("81")
             
-            if start != -1 and end != -1:
-                print(request_str)
-                break
-            
         try:
             str_subreq = str(request_str[int(start):int(end + 2)])
-            data_type, interpretedData, equipmentIMEI = do201.DO201.parse_data_DO201(str_subreq.strip().upper()) 
-            print("Data interpreted"+interpretedData+
-                  "\n IMEI of equipment is "+equipmentIMEI)
-            log.logger.info(f"Data interpreted-> {interpretedData} IMEI of equipment is {equipmentIMEI}")
-        
-        except Exception as e:
-            log.logger.error(f"Error while decode: {e}")
+            log.logger.info(str_subreq)
+            response = DO201.parse_data_DO201(str_subreq.strip().upper()) 
+            
+            if response:
+                data_type, interpretedData, equipmentIMEI = response
+                
+            else:
+                raise Exception("Problem doing when decoding hexadecimal!")
+
+            print(f"Data interpreted: {interpretedData}")
+            log.logger.info(f"Data interpreted: {interpretedData}")
+            
+        except:
+            detail_error = traceback.format_exc()
+            log.logger.error(f"Error while decode: {detail_error}")
+            print(detail_error)
+            log.logger.info("")
             client.close()
             return None
-    
+
         #====================- MongoDB -==============================
-        resultado = None
+        response = None
         if data_type == 1:
-            resultado = updatedDAO.upload_0x01_0x02(interpretedData)
+            response = updatedDAO.upload_0x01_0x02(interpretedData)
         elif data_type == 3:
-            resultado = updatedDAO.upload_0x03(interpretedData)
-            
-        if resultado:
-            print(f'Documento inserido com ID: {resultado.inserted_id}')
+            response = updatedDAO.upload_0x03(interpretedData)
+        
+        if response:
+            print(f'Documento inserido com ID: {response.inserted_id}')
         else:
+            log.logger.error(f"Data not sent to the database. 'response' not defined!")
             client.close()
+            log.logger.info("")
             return None
         #==================================================
         
         time.sleep(1)
         client.close()
         time.sleep(1)
-        log.logger.debug("close device connection")
+        log.logger.info("close device connection. With SUCESS!!!")
+        log.logger.info("")
+        
     except socket.timeout:
         print("time out")
+        log.logger.warning("Time out")
+        log.logger.info("")
         client.close()
         return None
