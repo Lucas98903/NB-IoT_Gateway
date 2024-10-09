@@ -14,7 +14,7 @@ def handle(client, address):
         global interpretedData
         global equipmentIMEI
         
-        client.settimeout(10)
+        client.settimeout(30)
         request_bytes = b""
         request_str = ""
         start = int(-1)
@@ -29,7 +29,11 @@ def handle(client, address):
             request_str = request_bytes.hex()
             start = str(request_str).find("8000")
             end = str(request_str).find("81")
-            
+
+            if start != -1:
+                print(request_str)
+                break
+
         try:
             str_subreq = str(request_str[int(start):int(end + 2)])
             log.logger.info(str_subreq)
@@ -48,7 +52,7 @@ def handle(client, address):
             detail_error = traceback.format_exc()
             log.logger.error(f"Error while decode: {detail_error}")
             print(detail_error)
-            log.logger.info("")
+            log.logger.info(detail_error)
             client.close()
             return None
 
@@ -60,7 +64,9 @@ def handle(client, address):
             response = updatedDAO.upload_0x03(interpretedData)
         
         if response:
-            print(f'Documento inserido com ID: {response.inserted_id}')
+            print(f'Documento inserido com ID: {response}')
+            log.logger.info(f"Uploaded to MongoDB")
+
         else:
             log.logger.error(f"Data not sent to the database. 'response' not defined!")
             client.close()
@@ -80,3 +86,4 @@ def handle(client, address):
         log.logger.info("")
         client.close()
         return None
+    

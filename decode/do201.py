@@ -27,7 +27,8 @@ class DO201(object):
                     data_rsrp_origin = req_data[38:46]
                     
                     data_rsrp = int(utility.IEEE754_Hex_To_Float(data_rsrp_origin))     
-                    
+                    # data_rsrp = 98903
+
                     timestamp = int(req_data[46:54], 16)
                     data_timestamp = datetime.fromtimestamp(timestamp)
                     
@@ -65,6 +66,7 @@ class DO201(object):
                             RSRP = data_rsrp,
                             frame_counter = data_frame_counter
                             )
+                        
                     except:
                         detail_error = traceback.format_exc()
                         log.logger.error(f"Error data model: {detail_error}")
@@ -79,7 +81,7 @@ class DO201(object):
                     data_height_threshold = int(req_data[18:20], 16)
                     data_magnet_threshold = int(req_data[20:24], 16)
                     data_battery_threshold = int(req_data[24:26], 16)
-                    
+
                     interpretedData = data_0X03(
                             firmware = data_version,
                             uploadInterval = data_upload_interval,
@@ -88,6 +90,7 @@ class DO201(object):
                             magnetThreshold = data_magnet_threshold,
                             batteryThreshold = data_battery_threshold
                         ) 
+                    
             else:
                 pass
         except:
