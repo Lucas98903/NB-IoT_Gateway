@@ -26,3 +26,5 @@ class data_0X03(BaseModel):
     levelThreshold: Any | None = None
     magnetThreshold: Any | None = None
     batteryThreshold: Any | None = None
+    ip: Any | None = None
+    port: Any | None = None

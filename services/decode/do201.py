@@ -2,7 +2,8 @@ import traceback
 
 from datetime import datetime
 
-from decode.utility import utility
+from services.decode.utils.RSRP import utility
+from services.decode.utils.protocol import hex_to_ip_and_port
 from model.data import data_0X01_0X02, data_0X03
 from log import log
 
@@ -32,7 +33,6 @@ class DO201(object):
                     timestamp = int(req_data[46:54], 16)
                     data_timestamp = datetime.fromtimestamp(timestamp)
                     
-                    
                     data_magnet_x = int(req_data[22:26], 16)
                     if data_magnet_x >= 32768:
                         data_magnet_x = data_magnet_x - 65536
@@ -47,7 +47,6 @@ class DO201(object):
                         data_temperature = data_temperature - 256
                     data_humidity = int(req_data[36:38], 16)
                     data_frame_counter = int(req_data[54:58], 16)
-                    
                     
                     try:
                         interpretedData = data_0X01_0X02(
@@ -83,6 +82,9 @@ class DO201(object):
                     data_magnet_threshold = int(req_data[20:24], 16)
                     data_battery_threshold = int(req_data[24:26], 16)
                     
+                    data_ip_and_port = str(req_data[26:60])
+                    data_ip, data_port = hex_to_ip_and_port(data_ip_and_port)
+                    
                     try:
                         interpretedData = data_0X03(
                                 firmware = data_version,
@@ -90,18 +92,23 @@ class DO201(object):
                                 detectInterval = data_cyclic_interval,
                                 levelThreshold = data_height_threshold,
                                 magnetThreshold = data_magnet_threshold,
-                                batteryThreshold = data_battery_threshold
+                                batteryThreshold = data_battery_threshold,
+                                ip = data_ip,
+                                port = data_port,
                             ) 
+                        
                     except:
                         detail_error = traceback.format_exc()
                         log.logger.error(f"Error data model 2: {detail_error}")
                         return None
 
             else:
-                pass
+                log.logger.critical('Error identifying hexadecimal type')
+
         except:
             detail_error = traceback.format_exc()
             log.logger.error(f"Error occurred: {detail_error}")
+
         finally:
             try:
                 return data_type, interpretedData, equipmentIMEI
