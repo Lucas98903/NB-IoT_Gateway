@@ -1,20 +1,50 @@
 import time
 import socket
 import traceback
+import threading
 
 from decode.do201 import DO201
 from database.DAO import updatedDAO
 from log import log
 
+
 interpretedData = ""
 equipmentIMEI = ""
 
+'''
+Possivel problema!
+
+Recebe o dado do equipamente, faz o decode e depois envia para o MongoDB (Banco de dados)
+
+E se o tempo do decode estou o tempo do banco de dados?
+'''
+
+
+def upload(data, data_type):
+    response = None
+    if data_type == 1:
+        response = updatedDAO.upload_0x01_0x02(data)
+        
+    elif data_type == 3:
+        response = updatedDAO.upload_0x03(data)
+    
+    if response:
+        print(f'Documento inserido com ID: {response}')
+
+    else:
+        print(f"Data not sent to the database. 'response' not defined!")
+        log.logger.error(f"Data not sent to the database. 'response' not defined!")
+    
+    return None
+
+
+#"address" será usado caso o código receba dado de mais de um equipamento.
 def handle(client, address):
     try:
         global interpretedData
         global equipmentIMEI
         
-        client.settimeout(30)
+        client.settimeout(10)
         request_bytes = b""
         request_str = ""
         start = int(-1)
@@ -23,6 +53,7 @@ def handle(client, address):
         while True:
             if not client._closed:
                 request_bytes = request_bytes + client.recv(1024)
+                
             if not request_bytes:
                 break
             
@@ -36,7 +67,6 @@ def handle(client, address):
 
         try:
             str_subreq = str(request_str[int(start):int(end + 2)])
-            log.logger.info(str_subreq)
             response = DO201.parse_data_DO201(str_subreq.strip().upper()) 
             
             if response:
@@ -46,43 +76,33 @@ def handle(client, address):
                 raise Exception("Problem doing when decoding hexadecimal!")
 
             print(f"Data interpreted: {interpretedData}")
-            log.logger.info(f"Data interpreted: {interpretedData}")
             
         except:
+            print()
             detail_error = traceback.format_exc()
             log.logger.error(f"Error while decode: {detail_error}")
             print(detail_error)
-            log.logger.info(detail_error)
+            log.logger.info("")
+            print()
             client.close()
             return None
 
         #====================- MongoDB -==============================
-        response = None
-        if data_type == 1:
-            response = updatedDAO.upload_0x01_0x02(interpretedData)
-        elif data_type == 3:
-            response = updatedDAO.upload_0x03(interpretedData)
-        
-        if response:
-            print(f'Documento inserido com ID: {response}')
-            log.logger.info(f"Uploaded to MongoDB")
-
-        else:
-            log.logger.error(f"Data not sent to the database. 'response' not defined!")
-            client.close()
-            log.logger.info("")
-            return None
+        thread = threading.Thread(
+            target=upload, args=(interpretedData, data_type)
+        )
+        thread.start()
         #==================================================
         
         time.sleep(1)
         client.close()
         time.sleep(1)
-        log.logger.info("close device connection. With SUCESS!!!")
         log.logger.info("")
+        print("Finish")
         
     except socket.timeout:
-        print("time out")
-        log.logger.warning("Time out")
+        print("Time out or bug occurred")
+        log.logger.warning("Time out or bug occurred")
         log.logger.info("")
         client.close()
         return None

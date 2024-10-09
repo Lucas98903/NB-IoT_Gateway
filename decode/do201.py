@@ -69,8 +69,9 @@ class DO201(object):
                         
                     except:
                         detail_error = traceback.format_exc()
-                        log.logger.error(f"Error data model: {detail_error}")
+                        log.logger.error(f"Error data model 1: {detail_error}")
                         log.logger.error()
+                        return None
                     
                 elif (data_type == "03"):
                     data_type = 3
@@ -81,16 +82,21 @@ class DO201(object):
                     data_height_threshold = int(req_data[18:20], 16)
                     data_magnet_threshold = int(req_data[20:24], 16)
                     data_battery_threshold = int(req_data[24:26], 16)
-
-                    interpretedData = data_0X03(
-                            firmware = data_version,
-                            uploadInterval = data_upload_interval,
-                            detectInterval = data_cyclic_interval,
-                            levelThreshold = data_height_threshold,
-                            magnetThreshold = data_magnet_threshold,
-                            batteryThreshold = data_battery_threshold
-                        ) 
                     
+                    try:
+                        interpretedData = data_0X03(
+                                firmware = data_version,
+                                uploadInterval = data_upload_interval,
+                                detectInterval = data_cyclic_interval,
+                                levelThreshold = data_height_threshold,
+                                magnetThreshold = data_magnet_threshold,
+                                batteryThreshold = data_battery_threshold
+                            ) 
+                    except:
+                        detail_error = traceback.format_exc()
+                        log.logger.error(f"Error data model 2: {detail_error}")
+                        return None
+
             else:
                 pass
         except:
@@ -102,7 +108,8 @@ class DO201(object):
             except:
                 detail_error = traceback.format_exc()
                 log.logger.error(f"Error, variable not defined: {detail_error}")
-
+                return None
+                
 ####- Para fazer testes:
 if __name__ == "__main__":
     try:
