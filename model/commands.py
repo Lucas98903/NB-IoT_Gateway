@@ -11,3 +11,4 @@ class preferences(BaseModel):
     restart_sensor: bool = None 
     action_serial: bool = None 
     action_bluetooth: bool = None 
+    imei: int

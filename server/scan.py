@@ -10,9 +10,6 @@ max_clients = 10
 
 def scanner():
     try:
-        interpretedData = ""
-        token_deviceid = ""
-
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.bind(("0.0.0.0", port_number))
         server_socket.listen(max_clients)

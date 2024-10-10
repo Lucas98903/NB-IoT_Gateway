@@ -11,11 +11,9 @@ firmware='1.2', uploadInterval=24, detectInterval=5, levelThreshold=60, magnetTh
 '''
 
 class equipmentConfiguration():
-    def __init__(self, ip, port):
+    def __init__(self,):
         self.start_packet = '80029999'
         self.end_packet = '81'
-        self.equipment_ip = ip
-        self.equipment_port = port
     
     def _send_to_equipment(self, command):
         start = int(-1)
@@ -64,8 +62,8 @@ class equipmentConfiguration():
             return response
     
     def set_upload_time(self, time):
-        # Time in hours 01-24 (h)
-        if 1 <= int(time) <= 24:
+        # Time in hours 01-168 (h)
+        if 1 <= int(time) <= 168:
             hexadecimal = str(hex(int(time)))[2:4].upper()
             command = str(self.start_packet + '01' + hexadecimal + self.end_packet)            
             response = self._send_to_equipment(command)
