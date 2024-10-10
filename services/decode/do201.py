@@ -68,7 +68,7 @@ class DO201(object):
                         
                     except:
                         detail_error = traceback.format_exc()
-                        log.logger.error(f"Error data model 1: {detail_error}")
+                        log.logger.error(f"Error in model 'data_0X01_0X02': \n DETAIL ERROR \n {detail_error}")
                         log.logger.error()
                         return None
                     
@@ -99,7 +99,7 @@ class DO201(object):
                         
                     except:
                         detail_error = traceback.format_exc()
-                        log.logger.error(f"Error data model 2: {detail_error}")
+                        log.logger.error(f"Error in model 'data_0X03': \n DETAIL ERROR: \n{detail_error}")
                         return None
 
             else:
@@ -112,12 +112,13 @@ class DO201(object):
         finally:
             try:
                 return data_type, interpretedData, equipmentIMEI
+            
             except:
                 detail_error = traceback.format_exc()
-                log.logger.error(f"Error, variable not defined: {detail_error}")
+                log.logger.error(f"Unable to decode hexadecimal -> {req_data} \n DETAIL ERROR: \n{detail_error}")
                 return None
                 
-####- Para fazer testes:
+#- Para fazer testes:
 if __name__ == "__main__":
     try:
         #incomingData = "8000310226270F11100165010DFC31F868FD13000070C4659CF8060001186973806917580581"
