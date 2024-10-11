@@ -21,4 +21,3 @@ async def create_item(item: Item):
         "price": item.price,
         "tax": item.tax
     }
-

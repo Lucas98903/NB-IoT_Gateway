@@ -1,3 +1,3 @@
-from .sensor_DAO import upload_status_sensor
+from .sensor_DAO import UploadStatusSensor
 
-updatedDAO = upload_status_sensor()
+updatedDAO = UploadStatusSensor()

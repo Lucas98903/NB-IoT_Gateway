@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Any
 
 
-class data_0X01_0X02(BaseModel):
+class Data0x010x02(BaseModel):
     volt: float
     alarmBattery: int
     level: int
@@ -13,13 +13,14 @@ class data_0X01_0X02(BaseModel):
     xMagnet: int
     yMagnet: int
     zMagnet: int
-    timestamp: datetime  
-    temperature: int  
-    humidity: int                     
-    RSRP: int     
+    timestamp: datetime
+    temperature: int
+    humidity: int
+    RSRP: int
     frame_counter: int
-    
-class data_0X03(BaseModel):
+
+
+class Data0x03(BaseModel):
     firmware: Any | None = None
     uploadInterval: Any | None = None
     detectInterval: Any | None = None
