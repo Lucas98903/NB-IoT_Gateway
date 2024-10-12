@@ -3,14 +3,24 @@ import socket
 import traceback
 import threading
 
+from controller.controller_comand import ManagerCommand
 from services.upload.uploader import upload
 from services.decode.do201 import DO201
 from database.DAO import updatedDAO
 from log import log
 
+from services.memory.memory import Memory
+
+
 
 class Handle:
     def __init__(self):
+        manager = ManagerCommand()
+        memory = Memory()
+
+        address_memory = manager.get_adress()
+        self.codes = memory.load(address_memory)
+        
         self.timeout = int(59)
 
     @staticmethod
@@ -36,7 +46,10 @@ class Handle:
             if counter >= 10 or not request_bytes:
                 return None
 
-    def set_preferences(self, codes):
+    def set_preferences(self):
+        '''
+        Codar a maneira de enviar os comando para o sensor
+        '''
         pass
 
     def connection(self, client, command):
@@ -57,6 +70,9 @@ class Handle:
                 else:
                     raise Exception("Problem when decoding hexadecimal!")
 
+                if len(self.codes) > 0:
+                    self.set_preferences()
+
             except Exception as e:
                 print(f"An error occurred: {e}")
                 detail_error = traceback.format_exc()
@@ -67,7 +83,6 @@ class Handle:
         except socket.timeout:
             print("Timeout occurred")
             log.logger.warning("Timeout occurred")
-            log.logger.info("")
 
         except ValueError as ve:
             print(f"Value error: {ve}")
