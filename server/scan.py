@@ -3,7 +3,8 @@ import threading
 import traceback
 
 from log import log
-from controller.handle_client import handle
+# from controller.handle_client import handle
+from server.conection import Handle
 
 port_number = 810
 max_clients = 10
@@ -22,8 +23,9 @@ def scanner():
             print(f"Socket: {client_socket}")
             log.logger.info(
                 f"=======- {str(client_address)} user connected! -=======")
+            handler = Handle()
             thread = threading.Thread(
-                target=handle, args=(client_socket, client_address)
+                target=handler.connection, args=(client_socket, client_address)
             )
             thread.start()
             log.logger.debug(

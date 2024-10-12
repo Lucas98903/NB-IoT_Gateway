@@ -1,16 +1,17 @@
-from services.preference.configuration import Equipmentconfiguration
+from services.preference.configuration import EquipmentConfiguration
 from services.memory.memory import Memory
 from model.commands import Preferences
 
+
 class ManagerCommand:
-    def __init__(self, preferences):
+    def __init__(self):
         self.address_memory = str(r'services\memory\data')
         self.out_of_range = {}
         self.codes = []
         self.memomry = Memory()
 
     def _assembler_command(self):
-        configuration = Equipmentconfiguration()
+        configuration = EquipmentConfiguration()
         self.codes = []
 
         if self.upload_time:
@@ -23,7 +24,7 @@ class ManagerCommand:
                     "upload_time": f"Value: {self.upload_time} - out of range time in hour 01~168 (h)"
                 }
         else:
-                self.out_of_range = {"upload_time": "N/A"}
+            self.out_of_range = {"upload_time": "N/A"}
 
         if self.height_threshold:
             code = configuration.set_height_threshold(self.height_threshold)
@@ -32,7 +33,7 @@ class ManagerCommand:
                 self.out_of_range = {"height_threshold": "OK"}
             else:
                 self.out_of_range = {"height_threshold":
-                                f"Value: {self.height_threshold} - out of range 5-255 (cm)"
+                                         f"Value: {self.height_threshold} - out of range 5-255 (cm)"
                                      }
         else:
             self.out_of_range = {"height_threshold": "N/A"}
@@ -48,7 +49,7 @@ class ManagerCommand:
                 }
         else:
             self.out_of_range = {"alarm_battery": "N/A"}
-            
+
         if self.cycle_detection:
             code = configuration.set_cycle_detection(self.cycle_detection)
             if code:
@@ -91,29 +92,38 @@ class ManagerCommand:
         else:
             self.out_of_range = {"action_serial": "N/A"}
 
-
         if self.action_bluetooth is not None:
             if self.action_bluetooth:
                 code = configuration.open_bluetooth()
             else:
                 code = configuration.close_bluetooth()
-            
+
             self.out_of_range = {"action_bluetooth": "OK"}
             self.codes.append(code)
         else:
             self.out_of_range = {"action_bluetooth": "N/A"}
 
         object_range = Preferences(
-            upload_time = self.out_of_range["upload_time"],
-            height_threshold = self.out_of_range["height_threshold"],
-            alarm_battery = self.out_of_range["alarm_battery"],
-            cycle_detection = self.out_of_range["cycle_detection"],
-            magnetic_threshold = self.out_of_range["magnetic_threshold"],
-            restart_sensor = self.out_of_range["restart_sensor"],
-            action_serial = self.out_of_range["action_serial"],
-            action_bluetooth = self.out_of_range["restart_sensor"],
-            imei = self.imei
+            upload_time=self.out_of_range["upload_time"],
+            height_threshold=self.out_of_range["height_threshold"],
+            alarm_battery=self.out_of_range["alarm_battery"],
+            cycle_detection=self.out_of_range["cycle_detection"],
+            magnetic_threshold=self.out_of_range["magnetic_threshold"],
+            restart_sensor=self.out_of_range["restart_sensor"],
+            action_serial=self.out_of_range["action_serial"],
+            action_bluetooth=self.out_of_range["restart_sensor"],
+            imei=self.imei
         )
+
+        return object_range
+
+    def _manager_command(self):
+        object_range = self._assembler_command()
+
+        if len(self.codes) > 0:
+            # Passa a informação para a memória caso haja um requisição dentro do padrões
+            self.memomry.storage(self.codes)
+            self.memomry.save(self.address_memory)
 
         return object_range
 
@@ -128,14 +138,7 @@ class ManagerCommand:
         self.action_bluetooth = preferences.action_bluetooth
         self.imei = preferences.imei
 
-    def manager_command(self):
-        object_range = self._assembler_command()
-
-        if len(self.codes) > 0:
-            self.memomry.store(self.codes)
-            self.memomry.save(self.address_memory)
-        
-        return object_range
+        return self._manager_command()
 
     def get_adress(self):
         return self.address_memory

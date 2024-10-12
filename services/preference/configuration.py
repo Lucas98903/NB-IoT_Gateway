@@ -1,12 +1,18 @@
-
 """
 Amostra do feedback esperado do sensor:
-firmware='1.2', uploadInterval=24, detectInterval=5, levelThreshold=60, magnetThreshold=60, batteryThreshold=20, ip='120.92.89.122', port=9090
+firmware='1.2', 
+uploadInterval=24,
+detectInterval=5,
+levelThreshold=60, 
+magnetThreshold=60, 
+batteryThreshold=20, 
+ip='120.92.89.122', 
+port=9090
 """
 
 
-class Equipmentconfiguration:
-    def __init__(self,):
+class EquipmentConfiguration:
+    def __init__(self):
         self.start_packet = '80029999'
         self.end_packet = '81'
 
@@ -65,7 +71,7 @@ class Equipmentconfiguration:
         else:
             return None
 
-# =================Experimental==============
+    # =================Experimental==============
     @staticmethod
     def restart_sensor():
         command = str('80029999090281')
@@ -90,7 +96,8 @@ class Equipmentconfiguration:
     def close_bluetooth():
         command = str('80029999091181')
         return command
-# ==========================================
+
+    # ==========================================
 
     '''
         Configuração das APN e Portas nao estão programadas

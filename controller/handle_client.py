@@ -7,7 +7,6 @@ from services.decode.do201 import DO201
 from database.DAO import updatedDAO
 from log import log
 
-
 interpretedData = ""
 equipmentIMEI = ""
 

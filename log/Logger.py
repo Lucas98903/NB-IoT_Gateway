@@ -19,7 +19,8 @@ class Logger(object):
         'crit': logging.CRITICAL
     }
 
-    def __init__(self, filename, level='info', when='D', backCount=7,  # Configurado para limpar o histórico antigo depois de 7 Dias
+    def __init__(self, filename, level='info', when='D', backCount=7,
+                 # Configurado para limpar o histórico antigo depois de 7 Dias
                  fmt='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s'):
         self.logger = logging.getLogger(filename)
         if not self.logger.hasHandlers():  # Verifica se o logger já possui handlers

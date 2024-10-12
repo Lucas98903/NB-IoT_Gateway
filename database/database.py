@@ -9,7 +9,8 @@ from log import log
 
 class Database:
     def __init__(self, database: str, collection: str):
-        self.clusterConnection: Optional[pymongo.MongoClient] = None  # Inicializa como None, mas pode ser do tipo MongoClient
+        self.clusterConnection: Optional[
+            pymongo.MongoClient] = None  # Inicializa como None, mas pode ser do tipo MongoClient
         self.db: Optional[PyMongoDatabase] = None  # Pode ser None ou PyMongoDatabase
         self.collection: Optional[Collection] = None  # Pode ser None ou Collection
         self.connect(database, collection)

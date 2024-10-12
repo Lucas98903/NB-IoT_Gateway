@@ -7,7 +7,7 @@ class Memory:
     def __init__(self):
         self.data = None
 
-    def store(self, dado):
+    def storage(self, dado):
         self.data = dado
 
     def read(self):
@@ -25,4 +25,3 @@ class Memory:
             print("File not found. Starting empty memory.")
             log.logger.error("File not found. SFtarting empty memory.")
             self.data = []
-

@@ -8,7 +8,7 @@ from log import log
 
 class DO201(object):
     @staticmethod
-    def parse_data_do201( req_data):
+    def parse_data_do201(req_data):
         data_type = None
         interpreted_data = None
         equipment_imei = None
@@ -76,7 +76,7 @@ class DO201(object):
 
                 elif data_type == "03":
                     data_type = 3
-                    equipment_imei = req_data[data_len*2-17:data_len*2-2]
+                    equipment_imei = req_data[data_len * 2 - 17:data_len * 2 - 2]
                     data_version = str(
                         int(req_data[10:12], 16)) + "." + str(int(req_data[12:14], 16))
                     data_upload_interval = int(req_data[14:16], 16)
