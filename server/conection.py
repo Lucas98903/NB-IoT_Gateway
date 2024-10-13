@@ -1,7 +1,6 @@
 import time
 import socket
 import traceback
-import threading
 
 from controller.controller_comand import ManagerCommand
 from services.upload.uploader import upload
@@ -13,10 +12,11 @@ from log import log
 class Handle:
     def __init__(self):
         manager = ManagerCommand()
-        memory = Memory()
+        self.memory = Memory()
 
-        address_memory = manager.get_adress()
-        self.codes = memory.load(address_memory)
+        address_memory_code, self.address_memory_return = manager.get_adress()
+        self.memory.load(address_memory_code)
+        self.codes = self.memory.read()
 
         self.client = None
         self.timeout = int(59)
@@ -50,15 +50,21 @@ class Handle:
             self.client.sendall(command)
 
         else:
-            raise Exception("The connection to the client was closed before sending the commands")
+            raise Exception(
+                "The connection to the client was closed before sending the commands")
 
-    @staticmethod
-    def _decode_upload_data(str_sub_request):
-        str_sub_request = DO201.parse_data_do201(str_sub_request.strip().upper())
+    def _decode_upload_data(self, str_sub_request):
+        str_sub_request = DO201.parse_data_do201(
+            str_sub_request.strip().upper())
 
         if str_sub_request:
             data_type, interpreted_data, equipment_imei = str_sub_request
+
+            self.memory.storage(interpreted_data)
+            self.memory.save(self.address_memory_code)
+
             upload(interpreted_data, data_type)
+
         else:
             raise Exception("Problem when decoding hexadecimal!")
 
@@ -90,14 +96,15 @@ class Handle:
 
                     if str_sub_request:
                         self._decode_upload_data(str_sub_request)
+
                     else:
-                        raise ValueError("Not receive data before send command")
+                        raise ValueError(
+                            "Not receive data before send command")
 
             except Exception as e:
                 detail_error = traceback.format_exc()
                 print(f"\n {e} \n {detail_error}")
                 log.logger.error(f"Error occuried: \n{detail_error} \n{e}")
-
 
         except socket.timeout:
             print("Timeout occurred")

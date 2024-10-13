@@ -9,5 +9,9 @@ manager = ManagerCommand()
 
 @router.post("/preferences")
 async def create_item(preferences: Preferences):
-    out_of_range = manager.insert_object(preferences)
-    return out_of_range
+    return manager.insert_object(preferences)
+
+
+@router.get("/status-configuration")
+def get_status_preferences():
+    return manager.get_status_preferences()

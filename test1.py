@@ -1,7 +1,6 @@
-class Item(BaseModel):
-    nome: str
-    descricao: Optional[str] = None
-    preco: float
-    quantidade: int
+teste = {}
 
-print(len(Item))
+teste["teste"]= "Lucas"
+teste["Girfriend"] =  "Alone"
+
+print(teste)

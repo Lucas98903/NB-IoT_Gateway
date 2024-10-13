@@ -72,29 +72,24 @@ class EquipmentConfiguration:
             return None
 
     # =================Experimental==============
-    @staticmethod
-    def restart_sensor():
-        command = str('80029999090281')
+    def restart_sensor(self):
+        command = str(self.start_packet + '09' + '02' + self.end_packet)
         return command
 
-    @staticmethod
-    def open_serial():
-        command = str('80029999090B81')
+    def open_serial(self):
+        command = str(self.start_packet + '09' + '0B' + self.end_packet)
         return command
 
-    @staticmethod
-    def close_serial():
-        command = str('80029999090C81')
+    def close_serial(self):
+        command = str(self.start_packet + '09' + '0C' + self.end_packet)
         return command
 
-    @staticmethod
-    def open_bluetooth():
-        command = str('80029999091281')
+    def open_bluetooth(self):
+        command = str(self.start_packet + '09' + '12' + self.end_packet)
         return command
 
-    @staticmethod
-    def close_bluetooth():
-        command = str('80029999091181')
+    def close_bluetooth(self):
+        command = str(self.start_packet + '09' + '11'+ self.end_packet)
         return command
 
     # ==========================================

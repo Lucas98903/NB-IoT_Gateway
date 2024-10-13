@@ -6,6 +6,7 @@ from log import log
 class Memory:
     def __init__(self):
         self.data = None
+        self.address = None
 
     def storage(self, dado):
         self.data = dado
@@ -14,6 +15,7 @@ class Memory:
         return self.data
 
     def save(self, arquivo):
+        self.address = arquivo
         with open(arquivo, 'wb') as f:
             pickle.dump(self.data, f)
 
@@ -21,7 +23,9 @@ class Memory:
         try:
             with open(arquivo, 'rb') as f:
                 self.data = pickle.load(f)
+
         except FileNotFoundError:
-            print("File not found. Starting empty memory.")
-            log.logger.error("File not found. SFtarting empty memory.")
-            self.data = []
+            print(f"File not found. Starting empty memory. -> {self.data}")
+            log.logger.warning(
+                f"File not found. Starting empty memory. -> {self.data}")
+            self.data = None

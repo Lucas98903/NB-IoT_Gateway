@@ -4,7 +4,7 @@ from services.decode.do201 import DO201
 '''
 Aqui é possivel tesstar o decode que importa o utility e model
 tambem o database e sensor_dao
-'''
+# '''
 
 #uploader = upload_status_sensor()
 
