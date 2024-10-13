@@ -3,7 +3,7 @@ from datetime import datetime
 from services.decode.utils.RSRP import Utility
 from services.decode.utils.protocol import hex_to_ip_and_port
 from model.data import Data0x010x02, Data0x03
-from log import log
+from services.logger import log
 
 
 class DO201(object):

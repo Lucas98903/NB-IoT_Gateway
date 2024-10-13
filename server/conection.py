@@ -6,7 +6,7 @@ from controller.controller_comand import ManagerCommand
 from services.upload.uploader import upload
 from services.memory.memory import Memory
 from services.decode.do201 import DO201
-from log import log
+from services.logger import log
 
 
 class Handle:

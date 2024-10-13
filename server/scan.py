@@ -2,7 +2,7 @@ import socket
 import threading
 import traceback
 
-from log import log
+from services.logger import log
 # from controller.handle_client import handle
 from server.conection import Handle
 
@@ -19,10 +19,14 @@ def scanner():
         while True:
             print("Waiting Connection")
             client_socket, client_address = server_socket.accept()
-            print(f"=======- {str(client_address)} user connected! -=======")
+
+            print(f"=======- {str(client_address)} user connected! -======="
+                  )
             print(f"Socket: {client_socket}")
             log.logger.info(
-                f"=======- {str(client_address)} user connected! -=======")
+                f"=======- {str(client_address)} user connected! -======="
+                )
+            
             handler = Handle()
             thread = threading.Thread(
                 target=handler.connection, args=(client_socket, client_address)

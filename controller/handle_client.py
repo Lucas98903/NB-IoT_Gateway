@@ -5,7 +5,7 @@ import threading
 
 from services.decode.do201 import DO201
 from database.DAO import updatedDAO
-from log import log
+from services.logger import log
 
 interpretedData = ""
 equipmentIMEI = ""

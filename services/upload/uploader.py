@@ -1,5 +1,5 @@
 from database.DAO import updatedDAO
-from log import log
+from services.logger import log
 
 
 def upload(data, data_type):

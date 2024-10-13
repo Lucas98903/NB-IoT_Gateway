@@ -4,7 +4,7 @@ from pymongo.collection import Collection
 from pymongo.database import Database as PyMongoDatabase  # Import correto para o tipo
 from typing import Optional  # Adiciona o Optional para indicar que pode ser None
 
-from log import log
+from services.logger import log
 
 
 class Database:

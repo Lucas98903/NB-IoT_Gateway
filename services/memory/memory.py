@@ -1,6 +1,6 @@
 import pickle
 
-from log import log
+from services.logger import log
 
 
 class Memory:

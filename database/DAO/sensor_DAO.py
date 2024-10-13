@@ -1,6 +1,6 @@
 import traceback
 from database import Database
-from log import log
+from services.logger import log
 
 
 class UploadStatusSensor:
