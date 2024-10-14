@@ -89,7 +89,7 @@ class EquipmentConfiguration:
         return command
 
     def close_bluetooth(self):
-        command = str(self.start_packet + '09' + '11'+ self.end_packet)
+        command = str(self.start_packet + '09' + '11' + self.end_packet)
         return command
 
     # ==========================================
