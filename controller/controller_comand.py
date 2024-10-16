@@ -5,12 +5,11 @@ from model.commands import OutRange
 
 class ManagerCommand:
     def __init__(self):
-        self.address_memory_code = str(r"services\memory\data\code.pkl")
-        self.address_memory_return = str(r"services\memory\data\return_code.pkl")
-        self.address_memory_alarm_park = str(r"services\memory\data\alarm_park.pkl")
+        self.address_memory_code = str(r"services\memory\data\code.json")
+        self.address_memory_return = str(r"services\memory\data\return_code.json")
+        self.address_memory_alarm_park = str(r"services\memory\data\alarm_park.json")
         self.memory = Memory()
-        self.out_of_range = {}
-        self.codes = []
+
         self.upload_time = None
         self.height_threshold = None
         self.alarm_battery = None
@@ -23,83 +22,79 @@ class ManagerCommand:
 
     def _assembler_command(self):
         configuration = EquipmentConfiguration()
-
+        codes = []
+        out_of_range = {}
         if self.upload_time:
             code = configuration.set_upload_time(self.upload_time)
             if code:
-                self.codes.append(code)
-                self.out_of_range["upload_time"] = "OK"
+                codes.append(code)
+                out_of_range["upload_time"] = "OK"
             else:
-                self.out_of_range["upload_time"] = (
+                out_of_range["upload_time"] = (
                     f"Value: {
                 self.upload_time} - out of range time in hour 01~168 (h)"
                 )
-
         else:
-            self.out_of_range["upload_time"] = "N/A"
+            out_of_range["upload_time"] = "N/A"
 
         if self.height_threshold:
             code = configuration.set_height_threshold(self.height_threshold)
             if code:
-                self.codes.append(code)
-                self.out_of_range["height_threshold"] = "OK"
+                codes.append(code)
+                out_of_range["height_threshold"] = "OK"
             else:
-                self.out_of_range["height_threshold"] = (
+                out_of_range["height_threshold"] = (
                     f"Value: {
                 self.height_threshold} - out of range 5-255 (cm)"
                 )
-
         else:
-            self.out_of_range["height_threshold"] = "N/A"
+            out_of_range["height_threshold"] = "N/A"
 
         if self.alarm_battery:
             code = configuration.set_battery_alarm(self.alarm_battery)
             if code:
-                self.codes.append(code)
-                self.out_of_range["alarm_battery"] = "OK"
+                codes.append(code)
+                out_of_range["alarm_battery"] = "OK"
             else:
-                self.out_of_range["alarm_battery"] = (
+                out_of_range["alarm_battery"] = (
                     f"Value: {
                 self.alarm_battery} - out of range level in percentage 5-99 (%)"
                 )
-
         else:
-            self.out_of_range["alarm_battery"] = "N/A"
+            out_of_range["alarm_battery"] = "N/A"
 
         if self.cycle_detection:
             code = configuration.set_cycle_detection(self.cycle_detection)
             if code:
-                self.codes.append(code)
-                self.out_of_range["cycle_detection"] = "OK"
+                codes.append(code)
+                out_of_range["cycle_detection"] = "OK"
             else:
-                self.out_of_range["cycle_detection"] = (
+                out_of_range["cycle_detection"] = (
                     f"Value: {
                 self.cycle_detection} - out of range time in minute 01-60 (min)"
                 )
-
         else:
-            self.out_of_range["cycle_detection"] = "N/A"
+            out_of_range["cycle_detection"] = "N/A"
 
         if self.magnetic_threshold:
             code = configuration.set_magnetic_threshold(self.magnetic_threshold)
             if code:
-                self.codes.append(code)
-                self.out_of_range["magnetic_threshold"] = "OK"
+                codes.append(code)
+                out_of_range["magnetic_threshold"] = "OK"
             else:
-                self.out_of_range["magnetic_threshold"] = (
+                out_of_range["magnetic_threshold"] = (
                     f"Value: {
                 self.magnetic_threshold} - out of range magnetic in Gauss 00001 - 655535"
                 )
-
         else:
-            self.out_of_range["magnetic_threshold"] = "N/A"
+            out_of_range["magnetic_threshold"] = "N/A"
 
         if self.restart_sensor is not None:
             code = configuration.restart_sensor()
-            self.codes.append(code)
-            self.out_of_range["restart_sensor"] = "OK"
+            codes.append(code)
+            out_of_range["restart_sensor"] = "OK"
         else:
-            self.out_of_range["restart_sensor"] = "N/A"
+            out_of_range["restart_sensor"] = "N/A"
 
         if self.action_serial is not None:
             if self.action_serial:
@@ -107,10 +102,10 @@ class ManagerCommand:
             else:
                 code = configuration.close_serial()
 
-            self.codes.append(code)
-            self.out_of_range["action_serial"] = "OK"
+            codes.append(code)
+            out_of_range["action_serial"] = "OK"
         else:
-            self.out_of_range["action_serial"] = "N/A"
+            out_of_range["action_serial"] = "N/A"
 
         if self.action_bluetooth is not None:
             if self.action_bluetooth:
@@ -118,10 +113,10 @@ class ManagerCommand:
             else:
                 code = configuration.close_bluetooth()
 
-            self.out_of_range["action_bluetooth"] = "OK"
-            self.codes.append(code)
+            out_of_range["action_bluetooth"] = "OK"
+            codes.append(code)
         else:
-            self.out_of_range["action_bluetooth"] = "N/A"
+            out_of_range["action_bluetooth"] = "N/A"
 
         object_range = OutRange(
             upload_time=self.out_of_range["upload_time"],
@@ -135,15 +130,13 @@ class ManagerCommand:
             imei=self.imei,
         )
 
-        return object_range
+        return object_range, codes
 
     def _manager_command(self):
-        object_range = self._assembler_command()
+        object_range, codes = self._assembler_command()
 
-        if len(self.codes) > 0:
-            # Passa a informação para a memória caso haja um requisição dentro do padrões
-            self.memory.storage(self.codes)
-            self.memory.save(self.address_memory_code)
+        if len(codes) > 0:
+            self.memory.storage_data(self.codes, self.address_memory_code)
 
         return object_range
 
@@ -161,8 +154,7 @@ class ManagerCommand:
         return self._manager_command()
 
     def get_status_preferences(self):
-        self.memory.load(self.address_memory_return)
-        return self.memory.read()
+        return self.memory.get_data(self.address_memory_return)
 
     def get_adress(self):
         return (

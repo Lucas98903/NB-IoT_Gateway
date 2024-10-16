@@ -1,31 +1,23 @@
-import pickle
-
-from services.logger import log
-
+import json
+from pydantic import BaseModel
 
 class Memory:
     def __init__(self):
         self.data = None
         self.address = None
 
-    def storage(self, dado):
-        self.data = dado
+    def storage_data(self, data, address):
+        if isinstance(data, BaseModel):
+            data = data.dict()
+            
+        with open(address, "w") as file:
+            json.dump(data, file)
 
-    def read(self):
-        return self.data
-
-    def save(self, arquivo):
-        self.address = arquivo
-        with open(arquivo, 'wb') as f:
-            pickle.dump(self.data, f)
-
-    def load(self, arquivo):
+    def get_data(self, address):
         try:
-            with open(arquivo, 'rb') as f:
-                self.data = pickle.load(f)
-
+            with open(address, "r") as file:
+                read = json.load(file)
+            return read
         except FileNotFoundError:
-            print(f"File not found. Starting empty memory. -> {self.data}")
-            log.logger.warning(
-                f"File not found. Starting empty memory. -> {self.data}")
-            self.data = None
+            return None
+        
