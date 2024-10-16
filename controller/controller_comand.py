@@ -1,13 +1,15 @@
 from services.preference.configuration import EquipmentConfiguration
+from model.data import Data0x03, AlarmPark, Data0x010x02
 from services.memory.memory import Memory
 from model.commands import OutRange
-
+from services.logger import log
 
 class ManagerCommand:
     def __init__(self):
         self.address_memory_code = str(r"services\memory\data\code.json")
         self.address_memory_return = str(r"services\memory\data\return_code.json")
         self.address_memory_alarm_park = str(r"services\memory\data\alarm_park.json")
+        self.address_memory_info = str(r"services\memory\data\info.json")
         self.memory = Memory()
 
         self.upload_time = None
@@ -154,11 +156,24 @@ class ManagerCommand:
         return self._manager_command()
 
     def get_status_preferences(self):
-        return self.memory.get_data(self.address_memory_return)
+        data = self.memory.get_data(self.address_memory_return)
+        return Data0x03(**data)
+
+    def get_status_park(self):
+        data = self.address_memory_alarm_park(self.address_memory_alarm_park)
+        if data == None:
+            data = 0
+            log.logger.warning("AlarmPark not found!")
+        return AlarmPark(alarm_park=data)
+
+    def get_status_info(self):
+        data = self.address_memory_alarm_park(self.address_memory_info)
+        return Data0x010x02(**data)
 
     def get_adress(self):
         return (
             self.address_memory_code,
             self.address_memory_return,
             self.address_memory_alarm_park,
+            self.address_memory_info
         )

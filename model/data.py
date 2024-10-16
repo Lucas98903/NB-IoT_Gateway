@@ -30,3 +30,6 @@ class Data0x03(BaseModel):
     ip: Any | None = None
     port: Any | None = None
     time: str | None = None
+
+class AlarmPark(BaseModel):
+    alarm_park: int

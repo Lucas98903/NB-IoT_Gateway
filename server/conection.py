@@ -18,6 +18,7 @@ class Handle:
             self.address_memory_code,
             self.address_memory_return,
             self.address_memory_alarm_park,
+            self.address_memory_info
         ) = manager.get_adress()
 
         self.codes = self.memory.get_data(self.address_memory_code)
@@ -72,6 +73,8 @@ class Handle:
 
             if data_type == 1:
                 self.memory.storage_data(interpreted_data.alarmPark, self.address_memory_alarm_park)
+                self.memory.storage_data(interpreted_data, self.address_memory_info)
+
             elif data_type == 3:
                 self.memory.storage_data(interpreted_data, self.address_memory_return)
 
@@ -116,7 +119,7 @@ class Handle:
 
             except Exception as e:
                 detail_error = traceback.format_exc()
-                print(f"\n {e} \n {detail_error}")
+                print(f"Error occuried: \n {e} \n {detail_error}")
                 log.logger.error(f"Error occuried: \n{detail_error} \n{e}")
 
         except socket.timeout:
