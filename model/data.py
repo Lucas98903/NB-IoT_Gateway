@@ -29,3 +29,7 @@ class Data0x03(BaseModel):
     batteryThreshold: Any | None = None
     ip: Any | None = None
     port: Any | None = None
+    time: str | None = None
+
+class AlarmPark(BaseModel):
+    alarm_park: int

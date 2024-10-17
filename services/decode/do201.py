@@ -89,6 +89,8 @@ class DO201(object):
                     data_ip, data_port = hex_to_ip_and_port(data_ip_and_port)
 
                     try:
+                        time_now = datetime.now()
+
                         interpreted_data = Data0x03(
                             firmware=data_version,
                             uploadInterval=data_upload_interval,
@@ -98,6 +100,7 @@ class DO201(object):
                             batteryThreshold=data_battery_threshold,
                             ip=data_ip,
                             port=data_port,
+                            time=time_now.strftime('%d/%m/%Y %H:%M')
                         )
 
                     except:

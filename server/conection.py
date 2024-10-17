@@ -1,4 +1,3 @@
-import time
 import socket
 import traceback
 import asyncio  # Importar asyncio para funções assíncronas
@@ -19,17 +18,13 @@ class Handle:
             self.address_memory_code,
             self.address_memory_return,
             self.address_memory_alarm_park,
+            self.address_memory_info
         ) = manager.get_adress()
 
-        self.memory.load(self.address_memory_code)
-        self.codes = self.memory.read()
+        self.codes = self.memory.get_data(self.address_memory_code)
 
         self.client = None
         self.timeout = int(59)
-
-    def _status_alarm_park(self, interpreted_data):
-        self.memory.storage(interpreted_data.alarmPark)
-        self.memory.save(self.address_memory_alarm_park)
 
     async def _receive_data(self):
         counter = 0
@@ -65,23 +60,23 @@ class Handle:
         if self.client.fileno() != -1:
             command = bytes.fromhex(code)
             await asyncio.get_event_loop().sock_sendall(self.client, command)
-
         else:
             raise Exception(
                 "The connection to the client was closed before sending the commands"
             )
 
-    def _decode_upload_data(self, str_sub_request):
+    async def _decode_upload_data(self, str_sub_request):
         str_sub_request = DO201.parse_data_do201(str_sub_request.strip().upper())
 
         if str_sub_request:
             data_type, interpreted_data, equipment_imei = str_sub_request
 
             if data_type == 1:
-                self._status_alarm_park(interpreted_data)
+                self.memory.storage_data(interpreted_data.alarmPark, self.address_memory_alarm_park)
+                self.memory.storage_data(interpreted_data, self.address_memory_info)
 
-            self.memory.storage(interpreted_data)
-            self.memory.save(self.address_memory_code)
+            elif data_type == 3:
+                self.memory.storage_data(interpreted_data, self.address_memory_return)
 
             upload(interpreted_data, data_type)
 
@@ -96,10 +91,10 @@ class Handle:
             str_sub_request = await self._receive_data()
 
             if str_sub_request is None:
-                raise ValueError("No data received from client.")
+                raise ValueError("No data received from client - 0x01")
 
             try:
-                self._decode_upload_data(str_sub_request)
+                await self._decode_upload_data(str_sub_request)
 
             except Exception as e:
                 print(f"An error occurred: {e}")
@@ -108,22 +103,23 @@ class Handle:
                 print(detail_error)
                 log.logger.info("")
 
+            #Verifica se há configurações para enviar para o equipamento
             try:
                 if self.codes != None:
                     if len(self.codes) > 0:
                         for code in self.codes:
                             await self._set_preferences(code)
-                            str_sub_request = await self._status_alarm_park()
 
+                        str_sub_request = await self._receive_data()
                         if str_sub_request:
-                            self._decode_upload_data(str_sub_request)
+                            await self._decode_upload_data(str_sub_request)
 
                         else:
-                            raise ValueError("Not receive data before send command")
+                            raise ValueError("Not receive data before send command. - 0x03")
 
             except Exception as e:
                 detail_error = traceback.format_exc()
-                print(f"\n {e} \n {detail_error}")
+                print(f"Error occuried: \n {e} \n {detail_error}")
                 log.logger.error(f"Error occuried: \n{detail_error} \n{e}")
 
         except socket.timeout:
