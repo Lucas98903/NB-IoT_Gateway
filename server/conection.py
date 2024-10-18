@@ -41,7 +41,8 @@ class Handle:
 
             except socket.error as e:
                 detail_error = traceback.format_exc()
-                log.logger.error(f"Error receiving data: {e} \n {detail_error}")
+                log.logger.error(f"Error receiving data: {
+                                 e} \n {detail_error}")
 
             request_str = request_bytes.hex()
             start = request_str.find("8000")
@@ -50,7 +51,7 @@ class Handle:
             if start != -1 and end != -1:
                 print(request_str)
                 log.logger.info(request_str)
-                return request_str[start : end + 2]
+                return request_str[start: end + 2]
 
             await asyncio.sleep(1)
             if counter >= 10 or not request_bytes:
@@ -66,17 +67,21 @@ class Handle:
             )
 
     async def _decode_upload_data(self, str_sub_request):
-        str_sub_request = DO201.parse_data_do201(str_sub_request.strip().upper())
+        str_sub_request = DO201.parse_data_do201(
+            str_sub_request.strip().upper())
 
         if str_sub_request:
             data_type, interpreted_data, equipment_imei = str_sub_request
 
             if data_type == 1:
-                self.memory.storage_data(interpreted_data.alarmPark, self.address_memory_alarm_park)
-                self.memory.storage_data(interpreted_data, self.address_memory_info)
+                self.memory.storage_data(
+                    interpreted_data.alarmPark, self.address_memory_alarm_park)
+                self.memory.storage_data(
+                    interpreted_data, self.address_memory_info)
 
             elif data_type == 3:
-                self.memory.storage_data(interpreted_data, self.address_memory_return)
+                self.memory.storage_data(
+                    interpreted_data, self.address_memory_return)
 
             upload(interpreted_data, data_type)
 
@@ -103,7 +108,7 @@ class Handle:
                 print(detail_error)
                 log.logger.info("")
 
-            #Verifica se há configurações para enviar para o equipamento
+            # Verifica se há configurações para enviar para o equipamento
             try:
                 if self.codes != None:
                     if len(self.codes) > 0:
@@ -111,11 +116,16 @@ class Handle:
                             await self._set_preferences(code)
 
                         str_sub_request = await self._receive_data()
+
+                        self.memory.storage_data(
+                            None, self.address_memory_code)
+
                         if str_sub_request:
                             await self._decode_upload_data(str_sub_request)
 
                         else:
-                            raise ValueError("Not receive data before send command. - 0x03")
+                            raise ValueError(
+                                "Not receive data before send command. - 0x03")
 
             except Exception as e:
                 detail_error = traceback.format_exc()
