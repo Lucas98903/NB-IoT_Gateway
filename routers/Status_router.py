@@ -10,4 +10,3 @@ manager = ManagerCommand()
 @router.get("/status_park")
 def get_status_alarm_park():
     return manager.get_status_park()
-

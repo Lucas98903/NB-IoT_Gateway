@@ -23,4 +23,3 @@ class OutRange(BaseModel):
     restart_sensor: str = None
     action_serial: str = None
     action_bluetooth: str = None
-    imei: int = None

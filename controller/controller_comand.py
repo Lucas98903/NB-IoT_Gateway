@@ -4,14 +4,37 @@ from services.memory.memory import Memory
 from model.commands import OutRange
 from services.logger import log
 
+
 class ManagerCommand:
     def __init__(self):
-        self.address_memory_code = str(r"services\memory\data\code.json")
-        self.address_memory_return = str(r"services\memory\data\return_code.json")
-        self.address_memory_alarm_park = str(r"services\memory\data\alarm_park.json")
-        self.address_memory_info = str(r"services\memory\data\info.json")
-        self.memory = Memory()
+        windows = True
+        if windows:
+            self.address_memory_code = str(
+                r"services\memory\data\code.json"
+            )
+            self.address_memory_return = str(
+                r"services\memory\data\return_code.json")
+            self.address_memory_alarm_park = str(
+                r"services\memory\data\alarm_park.json"
+            )
+            self.address_memory_info = str(
+                r"services\memory\data\info.json"
+            )
+        else:
+            self.address_memory_code = str(
+                r"services/memory/data/code.json"
+            )
+            self.address_memory_return = str(
+                r"services/memory/data/return_code.json"
+            )
+            self.address_memory_alarm_park = str(
+                r"services/memory/data/alarm_park.json"
+            )
+            self.address_memory_info = str(
+                r"services/memory/data/info.json"
+            )
 
+        self.memory = Memory()
         self.upload_time = None
         self.height_threshold = None
         self.alarm_battery = None
@@ -34,7 +57,7 @@ class ManagerCommand:
             else:
                 out_of_range["upload_time"] = (
                     f"Value: {
-                self.upload_time} - out of range time in hour 01~168 (h)"
+                        self.upload_time} - out of range time in hour 01~168 (h)"
                 )
         else:
             out_of_range["upload_time"] = "N/A"
@@ -47,7 +70,7 @@ class ManagerCommand:
             else:
                 out_of_range["height_threshold"] = (
                     f"Value: {
-                self.height_threshold} - out of range 5-255 (cm)"
+                        self.height_threshold} - out of range 5-255 (cm)"
                 )
         else:
             out_of_range["height_threshold"] = "N/A"
@@ -60,7 +83,7 @@ class ManagerCommand:
             else:
                 out_of_range["alarm_battery"] = (
                     f"Value: {
-                self.alarm_battery} - out of range level in percentage 5-99 (%)"
+                        self.alarm_battery} - out of range level in percentage 5-99 (%)"
                 )
         else:
             out_of_range["alarm_battery"] = "N/A"
@@ -73,20 +96,21 @@ class ManagerCommand:
             else:
                 out_of_range["cycle_detection"] = (
                     f"Value: {
-                self.cycle_detection} - out of range time in minute 01-60 (min)"
+                        self.cycle_detection} - out of range time in minute 01-60 (min)"
                 )
         else:
             out_of_range["cycle_detection"] = "N/A"
 
         if self.magnetic_threshold:
-            code = configuration.set_magnetic_threshold(self.magnetic_threshold)
+            code = configuration.set_magnetic_threshold(
+                self.magnetic_threshold)
             if code:
                 codes.append(code)
                 out_of_range["magnetic_threshold"] = "OK"
             else:
                 out_of_range["magnetic_threshold"] = (
                     f"Value: {
-                self.magnetic_threshold} - out of range magnetic in Gauss 00001 - 655535"
+                        self.magnetic_threshold} - out of range magnetic in Gauss 00001 - 655535"
                 )
         else:
             out_of_range["magnetic_threshold"] = "N/A"
@@ -121,15 +145,14 @@ class ManagerCommand:
             out_of_range["action_bluetooth"] = "N/A"
 
         object_range = OutRange(
-            upload_time=self.out_of_range["upload_time"],
-            height_threshold=self.out_of_range["height_threshold"],
-            alarm_battery=self.out_of_range["alarm_battery"],
-            cycle_detection=self.out_of_range["cycle_detection"],
-            magnetic_threshold=self.out_of_range["magnetic_threshold"],
-            restart_sensor=self.out_of_range["restart_sensor"],
-            action_serial=self.out_of_range["action_serial"],
-            action_bluetooth=self.out_of_range["restart_sensor"],
-            imei=self.imei,
+            upload_time=out_of_range["upload_time"],
+            height_threshold=out_of_range["height_threshold"],
+            alarm_battery=out_of_range["alarm_battery"],
+            cycle_detection=out_of_range["cycle_detection"],
+            magnetic_threshold=out_of_range["magnetic_threshold"],
+            restart_sensor=out_of_range["restart_sensor"],
+            action_serial=out_of_range["action_serial"],
+            action_bluetooth=out_of_range["restart_sensor"]
         )
 
         return object_range, codes
@@ -138,7 +161,7 @@ class ManagerCommand:
         object_range, codes = self._assembler_command()
 
         if len(codes) > 0:
-            self.memory.storage_data(self.codes, self.address_memory_code)
+            self.memory.storage_data(codes, self.address_memory_code)
 
         return object_range
 
@@ -160,14 +183,14 @@ class ManagerCommand:
         return Data0x03(**data)
 
     def get_status_park(self):
-        data = self.address_memory_alarm_park(self.address_memory_alarm_park)
+        data = self.memory.get_data(self.address_memory_alarm_park)
         if data == None:
             data = 0
             log.logger.warning("AlarmPark not found!")
         return AlarmPark(alarm_park=data)
 
     def get_status_info(self):
-        data = self.address_memory_alarm_park(self.address_memory_info)
+        data = self.memory.get_data(self.address_memory_info)
         return Data0x010x02(**data)
 
     def get_adress(self):

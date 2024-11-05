@@ -1,9 +1,10 @@
 import traceback
+
 from datetime import datetime
+from services.logger import log
+from model.data import Data0x010x02, Data0x03
 from services.decode.utils.RSRP import Utility
 from services.decode.utils.protocol import hex_to_ip_and_port
-from model.data import Data0x010x02, Data0x03
-from services.logger import log
 
 
 class DO201(object):
@@ -12,6 +13,8 @@ class DO201(object):
         data_type = None
         interpreted_data = None
         equipment_imei = None
+
+        time_now = datetime.now()  # Tempo que a informação foi recebida.
 
         try:
             data_type = req_data[6:8]
@@ -30,10 +33,17 @@ class DO201(object):
                     data_rsrp_origin = req_data[38:46]
 
                     data_rsrp = int(
-                        Utility.ieee754_hex_to_float(data_rsrp_origin))
+                        Utility.ieee754_hex_to_float(data_rsrp_origin)
+                    )
 
-                    timestamp = int(req_data[46:54], 16)
-                    data_timestamp = datetime.fromtimestamp(timestamp)
+                    # ==========- Timestamp do sensor -===============
+                    # timestamp = int(req_data[46:54], 16)
+                    # data_timestamp = datetime.fromtimestamp(timestamp)
+                    # =================================================
+
+                    # =====- Tempo que a mensagem é desempacotado -=====
+                    data_timestamp = time_now
+                    # ==================================================
 
                     data_magnet_x = int(req_data[22:26], 16)
                     if data_magnet_x >= 32768:
@@ -71,12 +81,15 @@ class DO201(object):
                     except:
                         detail_error = traceback.format_exc()
                         log.logger.error(
-                            f"Error in model 'data_0X01_0X02': \n DETAIL ERROR \n {detail_error}")
+                            f"Error in model 'data_0X01_0X02': \n DETAIL ERROR \n {
+                                detail_error}"
+                        )
                         return None
 
                 elif data_type == "03":
                     data_type = 3
-                    equipment_imei = req_data[data_len * 2 - 17:data_len * 2 - 2]
+                    equipment_imei = req_data[data_len *
+                                              2 - 17:data_len * 2 - 2]
                     data_version = str(
                         int(req_data[10:12], 16)) + "." + str(int(req_data[12:14], 16))
                     data_upload_interval = int(req_data[14:16], 16)
@@ -132,7 +145,12 @@ if __name__ == "__main__":
     try:
         incomingData = "80003102260b6a00000168fd71fd85fb341a290000000066d62c2d0001186973806917602781"
         do201 = DO201()
-        interpretedData = do201.parse_data_do201(incomingData)  # Chamando o método da instância
+        interpretedData = do201.parse_data_do201(
+            incomingData   # Chamando o método da instância
+        )
         print(interpretedData)
     except Exception as e:
+        detail_error = traceback.format_exc()
         print(e)
+        print()
+        print(detail_error)
