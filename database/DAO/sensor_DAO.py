@@ -1,6 +1,7 @@
 import traceback
 from database import Database
 from services.logger import log
+from services.firebase.firestore import update_park
 
 
 class UploadStatusSensor:
@@ -33,13 +34,20 @@ class UploadStatusSensor:
                 },
                 upsert=True
             )
-            log.logger.info("upload_0x01_0x02 with SUCCESS")
+
+            log.logger.info(f"upload_0x01_0x02 with SUCCESS {resultado}")
+
+            # ==========- Firebase -==========
+            update_park(True if data.alarmPark == 1 else False)
+
             return resultado
 
         except:
             detail_error = traceback.format_exc()
-            print(f"Ocorreu um erro ao enviar para o MongoDB:\n {detail_error}")
-            log.logger.error(f"{type(data)} Error upload_0x01_0x02 {detail_error}, \n data: {data}")
+            print(f"Ocorreu um erro ao enviar para o MongoDB:\n {
+                  detail_error}")
+            log.logger.error(f"{type(data)} Error upload_0x01_0x02 {
+                             detail_error}, \n data: {data}")
             return None
 
     def upload_0x03(self, data):
@@ -63,6 +71,8 @@ class UploadStatusSensor:
 
         except:
             detail_error = traceback.format_exc()
-            print(f"Ocorreu um erro ao enviar para o MongoDB:\n {detail_error}")
-            log.logger.error(f"{type(data)} Error upload_0x01_0x03 : {detail_error}, \n data: {data}")
+            print(f"Ocorreu um erro ao enviar para o MongoDB:\n {
+                  detail_error}")
+            log.logger.error(f"{type(data)} Error upload_0x01_0x03 : {
+                             detail_error}, \n data: {data}")
             return None
