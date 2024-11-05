@@ -8,6 +8,7 @@ __pycache__/
 *.so
 *.pkl
 *.json
+*.DS_Store
 
 #Paste
 /test/
