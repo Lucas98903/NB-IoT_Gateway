@@ -7,14 +7,34 @@ from services.logger import log
 
 class ManagerCommand:
     def __init__(self):
-        self.address_memory_code = str(r"services\memory\data\code.json")
-        self.address_memory_return = str(
-            r"services\memory\data\return_code.json")
-        self.address_memory_alarm_park = str(
-            r"services\memory\data\alarm_park.json")
-        self.address_memory_info = str(r"services\memory\data\info.json")
-        self.memory = Memory()
+        windows = True
+        if windows:
+            self.address_memory_code = str(
+                r"services\memory\data\code.json"
+            )
+            self.address_memory_return = str(
+                r"services\memory\data\return_code.json")
+            self.address_memory_alarm_park = str(
+                r"services\memory\data\alarm_park.json"
+            )
+            self.address_memory_info = str(
+                r"services\memory\data\info.json"
+            )
+        else:
+            self.address_memory_code = str(
+                r"services/memory/data/code.json"
+            )
+            self.address_memory_return = str(
+                r"services/memory/data/return_code.json"
+            )
+            self.address_memory_alarm_park = str(
+                r"services/memory/data/alarm_park.json"
+            )
+            self.address_memory_info = str(
+                r"services/memory/data/info.json"
+            )
 
+        self.memory = Memory()
         self.upload_time = None
         self.height_threshold = None
         self.alarm_battery = None

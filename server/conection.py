@@ -1,6 +1,6 @@
-import socket
 import traceback
-import asyncio  # Importar asyncio para funções assíncronas
+import asyncio
+import socket
 
 from controller.controller_comand import ManagerCommand
 from services.upload.uploader import upload
@@ -108,7 +108,7 @@ class Handle:
                 print(detail_error)
                 log.logger.info("")
 
-            # Verifica se há configurações para enviar para o equipamento
+            # Verifica se há configurações para enviar para o equipamento.
             try:
                 if self.codes != None:
                     if len(self.codes) > 0:
