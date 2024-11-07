@@ -121,8 +121,17 @@ class Handle:
                         self.memory.storage_data(
                             None, self.address_memory_code)
 
-                        if str_sub_request:
-                            await self._decode_upload_data(str_sub_request)
+                        if str_sub_request is None:
+                            try:
+                                await self._decode_upload_data(str_sub_request)
+
+                            except Exception as e:
+                                print(f"An error occurred: {e}")
+                                detail_error = traceback.format_exc()
+                                log.logger.error(
+                                    f"Error while decoding: {detail_error}")
+                                print(detail_error)
+                                log.logger.info("")
 
                         else:
                             raise ValueError(
