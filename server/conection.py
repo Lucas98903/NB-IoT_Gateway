@@ -46,11 +46,11 @@ class Handle:
 
             request_str = request_bytes.hex()
             start = request_str.find("8000")
-            end = request_str.find("81")
+            end = request_str.rfind("81")
 
             if start != -1 and end != -1:
                 print(request_str)
-                log.logger.info(request_str)
+                log.logger.info(request_str[start: end + 2])
                 return request_str[start: end + 2]
 
             await asyncio.sleep(1)
@@ -59,6 +59,7 @@ class Handle:
 
     async def _set_preferences(self, code):
         if self.client.fileno() != -1:
+            log.logger.warning(f"Setting code to the configuration{code}")
             command = bytes.fromhex(code)
             await asyncio.get_event_loop().sock_sendall(self.client, command)
         else:
