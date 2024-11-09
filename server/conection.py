@@ -55,6 +55,8 @@ class Handle:
 
             await asyncio.sleep(1)
             if counter >= 10 or not request_bytes:
+                log.logger.warning(
+                    "Nao foi possivel receber dados do sensor dentro de 10 ciclos.")
                 return None
 
     async def _set_preferences(self, code):
@@ -122,20 +124,18 @@ class Handle:
                             None, self.address_memory_code)
 
                         if str_sub_request is None:
-                            try:
-                                await self._decode_upload_data(str_sub_request)
-
-                            except Exception as e:
-                                print(f"An error occurred: {e}")
-                                detail_error = traceback.format_exc()
-                                log.logger.error(
-                                    f"Error while decoding: {detail_error}")
-                                print(detail_error)
-                                log.logger.info("")
-
-                        else:
                             raise ValueError(
                                 "Not receive data before send command. - 0x03")
+                        try:
+                            await self._decode_upload_data(str_sub_request)
+
+                        except Exception as e:
+                            detail_error = traceback.format_exc()
+                            print(f"An error occurred: {e}")
+                            print(detail_error)
+                            log.logger.error(
+                                f"Error while decoding: {detail_error}")
+                            log.logger.info("")
 
             except Exception as e:
                 detail_error = traceback.format_exc()
